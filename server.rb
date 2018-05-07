@@ -21,9 +21,9 @@ CONTENT_TYPE_MAPPING = {
 }
 
 PORT = 2345
-# HOST = "192.168.1.170"
-HOST = "127.0.0.1"
-# HOST = 'localhost'
+
+HOST = IPSocket.getaddress(Socket.gethostname)
+
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
