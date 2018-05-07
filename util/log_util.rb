@@ -5,7 +5,7 @@ HISTORY=Hash.new { |h, k| h[k] = [] }
 def sputs(string, options={}) #puts string to sterr stream with color for aided visibility
   # debugger
   params = {
-    color: :white,
+    color: nil,
     important: false,
     newline: true,
     scrubLastNewline: true,
@@ -44,16 +44,14 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
     end
 
     hPush eString, tid
-
     raise e
 
   end
 end
 
 def scrubString(string, params)
-  # debugger
+
   if params[:scrubLastNewline]
-    # debugger
     while /[\r\n]/=~string.slice(-1)
       string = string.chop
     end
@@ -63,9 +61,12 @@ def scrubString(string, params)
     string = "\t#{string}"
     string = string.gsub(/\r\n|\r\n/,"\r\n\t")
   end
-  string = string.gsub(/[\r\n]/,"") unless params[:newline]
 
-  string = string.send(params[:color])
+  string = string.gsub(/[\r\n]/,"") if !params[:newline]
+
+  if params[:color]
+    string = string.send("colorize",params[:color].to_sym)
+  end
   return string
 end
 

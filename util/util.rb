@@ -4,22 +4,18 @@ require_relative 'log_util.rb'
 require_relative 'request_util.rb'
 require_relative 'response_util.rb'
 
-def string_from_file(path)
-  data = ""
-  f = File.open(path,"r")
-  f.each_line do |line|
-    data += line
-  end
-  return data
-end
 
-def get_requested_file(request_line)
+def get_file_path(request_line)
+  if(request_line.slice(-1) == "!")
+    return request_line
+  end
   begin
     request_uri = request_line.split(" ")[1]
   rescue Exception => ex
     puts ex
   end
-  path = URI.unescape(URI(request_uri).path)
+
+  path = URI.unescape(URI(request_uri).path)# I confess I no longer remember what this does. It is from the original function.
 
   clean = []
 
