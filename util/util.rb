@@ -1,6 +1,8 @@
 require 'uri'
 require_relative 'thread_util.rb'
 require_relative 'log_util.rb'
+require_relative 'request_util.rb'
+require_relative 'response_util.rb'
 
 def string_from_file(path)
   data = ""
@@ -11,15 +13,12 @@ def string_from_file(path)
   return data
 end
 
-
-
 def get_requested_file(request_line)
   begin
     request_uri = request_line.split(" ")[1]
   rescue Exception => ex
     puts ex
   end
-  # puts request_uri
   path = URI.unescape(URI(request_uri).path)
 
   clean = []

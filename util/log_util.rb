@@ -2,32 +2,74 @@ HISTORY=Hash.new { |h, k| h[k] = [] }
 @i=0
 
 
-def sputs(string, color: :white, important: false,) #puts string to sterr stream with color for aided visibility
+def sputs(string, options={}) #puts string to sterr stream with color for aided visibility
+  # debugger
+  params = {
+    color: :white,
+    important: false,
+    newline: true,
+    scrubLastNewline: true,
+    error: false,
+    indent: false,
+    header: false
+    }.merge(options)
+
+    if params[:header]
+      params[:newline] = true
+      params[:indent] = true
+    end
+
   begin
     tid = threadID
-    string = string.send(color)
-    string = string.gsub(/[\r\n]/,"")
+    string = scrubString(string, params)
 
-    hPush(string, tid)
-
-    string = "#{tid}: " + string
-    STDERR.puts(string)
+    hPush(string, tid) #push into history log
+    if($live_log || params[:important]) #live_log is a global flag set at execution to give more robust feedback
+      string = "#{tid}: " + string
+      STDERR.puts(string)
+    end
     return true
 
   rescue Exception => e
     eString ="#{e.backtrace[0]}: #{e.message} (#{e.exception.class})\r\n".red
 
-    (0... e.backtrace.length).each do |frame|
-      eString.concat "#{9.chr}from #{e.backtrace[frame]}".red
+    STDERR.puts "sputs logged an error\r\n".black.on_red
+    STDERR.puts(eString)
+
+    # (0... e.backtrace.length).each do |frame|
+    #   eString.concat "\tfrom #{e.backtrace[frame]}".red
+    # end
+    e.backtrace.each do |frame|
+      eString.concat "\tfrom #{frame}\r\n"
     end
 
     hPush eString, tid
-    STDERR.puts(eString)
 
     raise e
 
   end
 end
+
+def scrubString(string, params)
+  # debugger
+  if params[:scrubLastNewline]
+    # debugger
+    while /[\r\n]/=~string.slice(-1)
+      string = string.chop
+    end
+  end #this should be better, it depends on knowing the structure of the string
+
+  if params[:indent]
+    string = "\t#{string}"
+    string = string.gsub(/\r\n|\r\n/,"\r\n\t")
+  end
+  string = string.gsub(/[\r\n]/,"") unless params[:newline]
+
+  string = string.send(params[:color])
+  return string
+end
+
+
 
 def hPush(string, tid) #format string for history log and push to history log
   e = Time.now
