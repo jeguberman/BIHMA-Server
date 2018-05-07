@@ -5,7 +5,7 @@ require 'colorize'
 require 'timeout'
 
 
-require_relative 'util.rb'
+require_relative './util/util.rb'
 
 
 begin #handle interrupt
@@ -17,7 +17,9 @@ CONTENT_TYPE_MAPPING = {
   'html' => "text/html",
   "txt" => 'text/plain',
   'png' => 'image/png',
-  'jpg' => 'image/jpeg'
+  'jpg' => 'image/jpeg',
+  'css' => 'text/css',
+  'js', => 'text/js'
 }
 
 PORT = 2345
@@ -95,5 +97,5 @@ loop {
 }
 
 rescue Interrupt => e
-  onInterrupt
+  dumpHistory
 end
