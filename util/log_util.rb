@@ -3,10 +3,13 @@ HISTORY=Hash.new { |h, k| h[k] = [] }
 
 
 def sputs(string, options={}) #puts string to sterr stream with color for aided visibility
-  if  options[:error] || string.class == Exception
+  if string.class.ancestors.include? Exception
     handle_error(string)
     return false
   end
+
+
+  string = string.to_s
 
   params = {
     color: nil,
@@ -23,7 +26,7 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
     params[:indent] = true
   end
 
-  begin
+  # begin
     tid = threadID
     string = format_string(string, params)
 
@@ -34,25 +37,27 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
     end
     return true
 
-  rescue Exception => e
-    handle_error(e)
-  end
+  # rescue Exception => e
+  #   handle_error(e)
+  # end
 end
 
 def handle_error(error) #takes an exception and formats error message with backtrace for stdout
+
     tid = threadID
     eString ="#{error.backtrace[0]}: #{error.message} (#{error.exception.class})\r\n"
 
 
-    e.backtrace.each do |frame|
+
+    error.backtrace.each do |frame|
       eString.concat "\tfrom #{frame}\r\n"
     end
-    eString = eString.black.on_red
+    eString = eString.red
 
     STDERR.puts "sputs logged an error on thread #{tid}".black.on_red
     STDERR.puts(eString)
     history_push eString, tid
-    history_push "killing current thread".black.on_red, tid
+    history_push "killing current thread".red, tid
     Thread.kill Thread.current
 end
 

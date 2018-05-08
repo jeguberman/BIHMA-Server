@@ -1,8 +1,25 @@
+CONTENT_TYPE_MAPPING = {
+  'html' => "text/html",
+  "txt" => 'text/plain',
+  'png' => 'image/png',
+  'jpg' => 'image/jpeg',
+  'css' => 'text/css',
+  'js' => 'text/js'
+}
+CONTENT_TYPE_MAPPING.default = 'application/octet-stream'#If the server don't know what it is, then it's a blob. ... And also a virus
+
+STATUS_CODES = {
+  200 => "OK",
+  404 => "Not Found",
+  408 => "Request Timeout"
+}
+
 def generateHTML(options={})
 
   params = {
     title: "index",
-    banner: "index"
+    banner: "index",
+    status: 200
   }.merge options
 
   header = <<-HTML
@@ -49,12 +66,15 @@ def generateFileList
   home = Dir.pwd
   Dir.chdir WEB_ROOT
   list = ""
-
+begin
   Dir.glob("*").each do |filename|
     if !File.directory? filename
       list += "<li><a href='#{filename}' download>#{filename}</a></li>"
     end
   end
+rescue
+  sputs "", error:true
+end
 
   return list
 end

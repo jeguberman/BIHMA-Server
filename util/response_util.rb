@@ -1,15 +1,5 @@
 require_relative "dyn_html_gen.rb"
 
-CONTENT_TYPE_MAPPING = {
-  'html' => "text/html",
-  "txt" => 'text/plain',
-  'png' => 'image/png',
-  'jpg' => 'image/jpeg',
-  'css' => 'text/css',
-  'js' => 'text/js'
-}
-
-DEFAULT_CONTENT_TYPE = 'application/octet-stream' #If you don't know what it is, it's a blob. ... And also a virus
 
 def renderResponse(path)
   if path.slice(-1) == "!"
@@ -52,7 +42,7 @@ def edge_cases(path)
 
   case path
   when "timeout!"
-    responseHeader = "HTTP/ 1.1 408 Request Timeout\r\n"
+    responseHeader = "HTTP/1.1 408 Request Timeout\r\n"
     buffer = ""
     # sputs "begin".magenta
     File.open("public/status_codes/timeout.html") do |file|
