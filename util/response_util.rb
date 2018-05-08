@@ -19,11 +19,10 @@ def renderResponse(path)
   buffer = "" #will carry contents of file, if file found
   responseHeader = ""
 
-  sputs File.split(path).last.magenta
+
+
   if File.split(path).last == "index.html"
-    sputs "before".magenta
-    responseHeader, buffer = generateIndex
-    sputs "after".magenta
+    responseHeader, buffer = generateHTML
   elsif File.exist?(path) && !File.directory?(path)
     #respond with a 200 ok status code to indicate christmas is saved
     File.open(path, "rb") do |file|

@@ -3,7 +3,11 @@ HISTORY=Hash.new { |h, k| h[k] = [] }
 
 
 def sputs(string, options={}) #puts string to sterr stream with color for aided visibility
-  # debugger
+  if  options[:error] || string.class == Exception
+    handle_error(string)
+    return false
+  end
+
   params = {
     color: nil,
     important: false,
@@ -14,16 +18,16 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
     header: false
     }.merge(options)
 
-    if params[:header]
-      params[:newline] = true
-      params[:indent] = true
-    end
+  if params[:header]
+    params[:newline] = true
+    params[:indent] = true
+  end
 
   begin
     tid = threadID
-    string = scrubString(string, params)
+    string = format_string(string, params)
 
-    hPush(string, tid) #push into history log
+    history_push(string, tid) #push into history log
     if($live_log || params[:important]) #live_log is a global flag set at execution to give more robust feedback
       string = "#{tid}: " + string
       STDERR.puts(string)
@@ -31,25 +35,28 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
     return true
 
   rescue Exception => e
-    eString ="#{e.backtrace[0]}: #{e.message} (#{e.exception.class})\r\n".red
-
-    STDERR.puts "sputs logged an error\r\n".black.on_red
-    STDERR.puts(eString)
-
-    # (0... e.backtrace.length).each do |frame|
-    #   eString.concat "\tfrom #{e.backtrace[frame]}".red
-    # end
-    e.backtrace.each do |frame|
-      eString.concat "\tfrom #{frame}\r\n"
-    end
-
-    hPush eString, tid
-    raise e
-
+    handle_error(e)
   end
 end
 
-def scrubString(string, params)
+def handle_error(error) #takes an exception and formats error message with backtrace for stdout
+    tid = threadID
+    eString ="#{error.backtrace[0]}: #{error.message} (#{error.exception.class})\r\n"
+
+
+    e.backtrace.each do |frame|
+      eString.concat "\tfrom #{frame}\r\n"
+    end
+    eString = eString.black.on_red
+
+    STDERR.puts "sputs logged an error on thread #{tid}".black.on_red
+    STDERR.puts(eString)
+    history_push eString, tid
+    history_push "killing current thread".black.on_red, tid
+    Thread.kill Thread.current
+end
+
+def format_string(string, params)
 
   if params[:scrubLastNewline]
     while /[\r\n]/=~string.slice(-1)
@@ -72,7 +79,7 @@ end
 
 
 
-def hPush(string, tid) #format string for history log and push to history log
+def history_push(string, tid) #format string for history log and push to history log
   e = Time.now
   msStamp = "  #{e.strftime('%6L')}  ".magenta
   hString = "#{string}#{e}"#.strftime(" @ %I:%M:%S%p")}"

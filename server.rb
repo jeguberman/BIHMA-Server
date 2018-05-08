@@ -4,6 +4,7 @@ require 'socket'
 require 'uri'
 require 'colorize'
 require 'timeout'
+require 'os'
 
 require_relative './globals.rb'
 require_relative './util/util.rb'
@@ -11,12 +12,12 @@ require_relative './util/util.rb'
 puts ARGV[0]
 
 begin #handle interrupt
-# WEB_ROOT = './public'
+
 WEB_ROOT = ARGV[0] ? Dir.home + ARGV[0] : "./public"
 
 PORT = 2345
-# HOST = IPSocket.getaddress(Socket.gethostname)
-HOST = "192.168.1.169"
+HOST = IPSocket.getaddress(Socket.gethostname)
+# HOST = "192.168.1.169"
 
 server = TCPServer.new(HOST, PORT)
 
@@ -72,9 +73,9 @@ loop {
       end
     }#mutex
   rescue Exception => e
-    STDERR.puts "caught by thread#{threadID}"
-    sputs e.message.red
-    raise e
+    sputs e
+    sputs Thread.list, error: true
+    Thread.kill Thread.current
   end
   end#thread
 }#loop
@@ -82,8 +83,7 @@ rescue Interrupt => e
   dumpHistory
 
 rescue Exception => e
-  STDERR.puts "caught by main thread"
+  sputs "caught by main thread"
   raise e
-
 
 end
