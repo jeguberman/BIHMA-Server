@@ -1,3 +1,5 @@
+require_relative "dyn_html_gen.rb"
+
 CONTENT_TYPE_MAPPING = {
   'html' => "text/html",
   "txt" => 'text/plain',
@@ -13,14 +15,18 @@ def renderResponse(path)
   if path.slice(-1) == "!"
     return edge_cases(path)
   end
-  # options = {newline: true, indent: true}#, color: "green"}
+
   buffer = "" #will carry contents of file, if file found
   responseHeader = ""
 
-  if File.exist?(path) && !File.directory?(path)
-    #respond with a 200 ok status code to indicate christmas is real
+  sputs File.split(path).last.magenta
+  if File.split(path).last == "index.html"
+    sputs "before".magenta
+    responseHeader, buffer = generateIndex
+    sputs "after".magenta
+  elsif File.exist?(path) && !File.directory?(path)
+    #respond with a 200 ok status code to indicate christmas is saved
     File.open(path, "rb") do |file|
-      # debugger
       responseHeader = "HTTP/1.1 200 OK\r\n" +
       "Content-Type: #{content_type(file)}\r\n" +
       "Content-Length: #{file.size}\r\n" +

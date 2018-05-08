@@ -3,7 +3,7 @@ def getRequestWithTimeout(socket)
   status = ""
   options = {color: ""}
   begin
-    Timeout::timeout(5){
+    Timeout::timeout(30){
       request_line += socket.gets
     }
     puts request_line
