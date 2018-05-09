@@ -13,6 +13,7 @@ require_relative './util/get_path_and_ext_from_request.rb'
 require_relative './util/generate_response_body_and_status_code.rb'
 require_relative './util/generate_response_header.rb'
 require_relative './util/log_util.rb'
+require_relative './util/get_host_name.rb'
 
 puts ARGV[0]
 
