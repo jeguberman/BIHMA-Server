@@ -22,11 +22,11 @@ begin #handle interrupt
 WEB_ROOT = ARGV[0] ? Dir.home + ARGV[0] : "samples"
 
 PORT = 2345
-HOST = IPSocket.getaddress(Socket.gethostname)
-# HOST = "192.168.1.169"
+# HOST = IPSocket.getaddress(Socket.gethostname)
+HOST = get_host_address
 
 server = TCPServer.new(HOST, PORT)
-g
+
 sputs "Starting Server on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
 
 lock = Mutex.new #prevent different threads from accessing or mutating the same variables
@@ -101,4 +101,5 @@ rescue Interrupt => e
   dumpHistory
 rescue Exception => e
   STDERR.puts "caught by main thread"
+  raise e
 end
