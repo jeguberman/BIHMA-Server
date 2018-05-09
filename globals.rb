@@ -1,1 +1,1 @@
-$live_log = true
+$live_log = false

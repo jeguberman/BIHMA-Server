@@ -1,3 +1,4 @@
+#everything in here is horrible. 
 HISTORY=Hash.new { |h, k| h[k] = [] }
 @i=0
 

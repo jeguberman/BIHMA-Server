@@ -45,7 +45,6 @@ loop {
 
         sputs 'preparing to receive request line...', color: "yellow"
 
-
         #GET REQUEST
         request_line_status, request_line = get_request_with_timeout(socket)
         sputs request_line_status, important: true
@@ -53,14 +52,14 @@ loop {
 
         package={
           path: nil,
+          ext: nil,
           buffer: nil,
           status_code: nil,
           response_header: nil
         }
+
         #GET ROUTE
         package = package.merge get_path_and_ext_from_request(request_line)#add path to package
-
-
 
         #GENERATE RESPONSE
         sputs "rendering response...", color: "yellow"
@@ -72,8 +71,6 @@ loop {
           generate_response_header(package)
         )
         sputs "response header rendered", color: "green"
-
-        # sputs JSON.pretty_generate(package).magenta
 
         #SEND RESPONSE
         sputs "sending response", color: "yellow"
@@ -91,9 +88,6 @@ loop {
         sputs "\r\n"
 
         remove_thread_id
-        # if Thread.list.length > 1
-        # sputs "Thread_count: #{Thread.list.count}", color: "magenta"
-        # end
       rescue StandardError => e
 
         sputs e
@@ -104,8 +98,6 @@ loop {
 }#loop
 rescue Interrupt => e
   dumpHistory
-
-
 rescue Exception => e
   STDERR.puts "caught by main thread"
 end
