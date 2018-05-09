@@ -27,8 +27,8 @@ require 'thread'
 
   def threadID
     if THREAD_IDS[Thread.current]
-      return THREAD_IDS[Thread.current].to_s.rjust(3,"0")
+      return THREAD_IDS[Thread.current]
     else
-      return "?"
+      return nil
     end
   end

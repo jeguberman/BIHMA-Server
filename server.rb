@@ -6,15 +6,21 @@ require 'colorize'
 require 'timeout'
 require 'byebug'
 require 'os'
+require 'json'
 
 require_relative './globals.rb'
-require_relative './util/util.rb'
+require_relative './util/thread_util.rb'
+require_relative './util/get_request_with_timeout.rb'
+require_relative './util/get_path_and_ext_from_request.rb'
+require_relative './util/generate_response_body_and_status_code.rb'
+require_relative './util/generate_response_header.rb'
+require_relative './util/log_util.rb'
 
 puts ARGV[0]
 
 begin #handle interrupt
 
-WEB_ROOT = ARGV[0] ? Dir.home + ARGV[0] : "./public"
+WEB_ROOT = ARGV[0] ? Dir.home + ARGV[0] : "samples"
 
 PORT = 2345
 HOST = IPSocket.getaddress(Socket.gethostname)
@@ -22,14 +28,16 @@ HOST = IPSocket.getaddress(Socket.gethostname)
 
 server = TCPServer.new(HOST, PORT)
 
-sputs "Starting Server 2 on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
+sputs "Starting Server on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
 
-lock = Mutex.new #prevent different threads from accessing or mtuating the same variables
+lock = Mutex.new #prevent different threads from accessing or mutating the same variables
 
 
 loop {
+
   Thread.start(server.accept) do |socket|
-    lock.synchronize{
+
+    # lock.synchronize{
       begin
 
         add_thread_id
@@ -37,31 +45,47 @@ loop {
 
         sputs "opening socket connection with client from #{socket.remote_address.ip_address}", color: "green", important: true
 
+        sputs 'preparing to receive request line...', color: "yellow"
 
-        sputs 'preparing to receive request line', color: "yellow"
 
-        # request_line = socket.gets
-
-        #PARSE REQUEST
-        request_line_status, request_line = getRequestWithTimeout(socket)
+        #GET REQUEST
+        request_line_status, request_line = get_request_with_timeout(socket)
         sputs request_line_status, important: true
         sputs request_line, important:true, indent:true
 
-        #DETERMINE PATH
-        path = get_file_path(request_line)
-        path = path + "/index.html" if File.directory?(path)
+        package={
+          path: nil,
+          buffer: nil,
+          status_code: nil,
+          response_header: nil
+        }
+        #GET ROUTE
+        package = package.merge get_path_and_ext_from_request(request_line)#add path to package
+
+
+
+        #GENERATE RESPONSE
+        sputs "rendering response...", color: "yellow"
+        package = package.merge generate_response_body_and_status_code(package)
+        sputs "response body rendered", color: "green"
+
+        sputs "rendering response header...", color: "yellow"
+        package = package.merge(
+          generate_response_header(package)
+        )
+        sputs "response header rendered", color: "green"
+
+        # sputs JSON.pretty_generate(package).magenta
 
         #SEND RESPONSE
-        sputs "rendering response", color: "yellow"
-        response, fileBuffer = renderResponse(path)
-
-        socket.print(response)
+        sputs "sending response", color: "yellow"
+        socket.print(package[:response_header])
         socket.print "\r\n"
-        socket.print(fileBuffer)
+        socket.print(package[:body])
+        sputs "responded with: ", color: "green", important: true
+        sputs package[:response_header], indent: true, important: true
 
-        sputs "responded with: ", color: "green"
-        sputs response, indent: true
-
+        #CLOSE SOCKET
         sputs "closing socket connection with client", color: "green", important: true
         socket.close
         sputs "_____________________________________", color: "green"
@@ -70,23 +94,20 @@ loop {
 
         remove_thread_id
         # if Thread.list.length > 1
-        sputs "Threads: #{Thread.list}", color: "magenta"
+        # sputs "Thread_count: #{Thread.list.count}", color: "magenta"
         # end
       rescue StandardError => e
-        # STDERR.puts "ERROR".black.on_red
+
         sputs e
-        # STDERR.puts e
-        # STDERR.puts e.backtrace
-        Thread.kill Thread.current
+
       end#error net
-    }#mutex
+    # }#mutex
   end#thread
 }#loop
 rescue Interrupt => e
   dumpHistory
 
+
 rescue Exception => e
   STDERR.puts "caught by main thread"
-  fail
-
 end

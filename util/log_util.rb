@@ -28,11 +28,12 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
 
   # begin
     tid = threadID
+    tid = tid ? tid.to_s.rjust(4,"0") : "????"
     string = format_string(string, params)
 
     history_push(string, tid) #push into history log
     if($live_log || params[:important]) #live_log is a global flag set at execution to give more robust feedback
-      string = "#{tid}: " + string
+      string = "#{tid}/#{Thread.list.length}: " + string
       STDERR.puts(string)
     end
     return true
@@ -70,7 +71,7 @@ def format_string(string, params)
   end #this should be better, it depends on knowing the structure of the string
 
   if params[:indent]
-    string = "\t#{string}"
+    string = "#{string}"
     string = string.gsub(/\r\n|\r\n/,"\r\n\t")
   end
 
