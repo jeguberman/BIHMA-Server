@@ -13,7 +13,7 @@ require_relative './util/get_path_and_ext_from_request.rb'
 require_relative './util/generate_response_body_and_status_code.rb'
 require_relative './util/generate_response_header.rb'
 require_relative './util/log_util.rb'
-require_relative './util/get_host_name.rb'
+require_relative './util/get_host_address.rb'
 
 puts ARGV[0]
 
@@ -26,7 +26,7 @@ HOST = IPSocket.getaddress(Socket.gethostname)
 # HOST = "192.168.1.169"
 
 server = TCPServer.new(HOST, PORT)
-
+g
 sputs "Starting Server on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
 
 lock = Mutex.new #prevent different threads from accessing or mutating the same variables
