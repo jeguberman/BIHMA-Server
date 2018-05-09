@@ -17,9 +17,7 @@ def get_path_and_ext_from_request(request_line)
 #scrub the path to prevent attacks which seek to surpass WEB_ROOT
   clean = []
 
-  navigationPoints = path.split("/")#
-
-
+  navigationPoints = path.split("/")
   navigationPoints.each do |point|
     next if point.empty? || point == '.'
     if point== '..'
