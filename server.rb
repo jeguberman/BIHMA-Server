@@ -23,7 +23,7 @@ begin #handle interrupt (ctrl+c)
 
 WEB_ROOT = $GLOBALS[:path]
 
-PORT = 2345
+PORT = 9001
 HOST = get_host_address_ipv4
 
 server = TCPServer.new(HOST, PORT)
@@ -49,6 +49,7 @@ loop {
         request_line_status, request_line = get_request_with_timeout(socket)
         sputs request_line_status, important: true
         sputs request_line, important:true, indent:true
+        sleep(2)
 
         package={
           path: nil,
@@ -91,6 +92,7 @@ loop {
       rescue StandardError => e
 
         sputs e
+        Thread.kill Thread.current
 
       end#error net
     # }#mutex
