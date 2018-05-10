@@ -4,9 +4,9 @@ def render_html(options={})
   home = Dir.pwd
   Dir.chdir WEB_ROOT
   params = {
-    title: "index",
-    banner: "index",
-    message: "Click on the file you want to begin your download"
+    title: "500 Internal Server Error",
+    banner: "Internal Server Error",
+    message: ""
   }.merge(options)
 
 
@@ -24,7 +24,7 @@ def render_html(options={})
       <p>#{params[:message]}</p>
       <hr>
       <ul class='files'>
-        #{generateFileList}
+        #{generateFileList(params[:title])}
       </ul>
     </body>
   HTML
@@ -41,7 +41,10 @@ def render_html(options={})
   return html
 end
 
-def generateFileList
+def generateFileList(title)
+  if title != "index"
+    return nil
+  end
   list = ""
 begin
   Dir.glob("*").each do |filename|
@@ -63,7 +66,7 @@ end
 
 
 
-#this ended up not being used, but I believe I can use it in the future
+#this ended up not being used, but I believe I can use it in the future to organize the list of files by extension. I would also like to have an option to merely view the files instead of downloading them, which shouldn't prove too hard, except for the videos, which I believe will require decoding.
 
 # FORMATS = {
 #   png: :image

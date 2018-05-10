@@ -1,14 +1,13 @@
-#everything in here is horrible. 
+#everything in here is horrible.
 HISTORY=Hash.new { |h, k| h[k] = [] }
 @i=0
 
 
 def sputs(string, options={}) #puts string to sterr stream with color for aided visibility
   if string.class.ancestors.include? Exception
-    handle_error(string)
+    sputs_error(string)
     return false
   end
-
 
   string = string.to_s
 
@@ -27,24 +26,20 @@ def sputs(string, options={}) #puts string to sterr stream with color for aided 
     params[:indent] = true
   end
 
-  # begin
     tid = threadID
-    tid = tid ? tid.to_s.rjust(4,"0") : "????"
     string = format_string(string, params)
-
     history_push(string, tid) #push into history log
-    if($live_log || params[:important]) #live_log is a global flag set at execution to give more robust feedback
+
+    tid = tid ? tid.to_s.rjust(4,"0") : "????"
+
+    if($GLOBALS[:feedback] || params[:important])
       string = "#{tid}/#{Thread.list.length}: " + string
       STDERR.puts(string)
     end
     return true
-
-  # rescue Exception => e
-  #   handle_error(e)
-  # end
 end
 
-def handle_error(error) #takes an exception and formats error message with backtrace for stdout
+def sputs_error(error) #takes an exception and formats error message with backtrace for stdout
 
     tid = threadID
     eString ="#{error.backtrace[0]}: #{error.message} (#{error.exception.class})\r\n"

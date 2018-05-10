@@ -12,7 +12,7 @@ def get_request_with_timeout(socket)
     status_feedback = "received request line: ".green
   rescue Exception => e
     request_line = "timeout!"
-    status_feedback = "GET request from client timed out!".red
+    status_feedback = "GET request from client from #{socket.remote_address.ip_address} timed out on thread #{threadID}!".red
   end
   return status_feedback, request_line
 end

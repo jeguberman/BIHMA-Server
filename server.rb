@@ -4,33 +4,33 @@ require 'socket'
 require 'uri'
 require 'colorize'
 require 'timeout'
+require 'byebug'
 # require 'os'
 
 require_relative './globals.rb'
 require_relative './util/thread_util.rb'
+require_relative './util/log_util.rb'
+
+require_relative './util/get_host_address.rb'
 require_relative './util/get_request_with_timeout.rb'
 require_relative './util/get_path_and_ext_from_request.rb'
 require_relative './util/generate_response_body_and_status_code.rb'
 require_relative './util/generate_response_header.rb'
-require_relative './util/log_util.rb'
-require_relative './util/get_host_address.rb'
 
-puts ARGV[0]
+OptionsHandler.set_globals_from_argv
 
-begin #handle interrupt
+begin #handle interrupt (ctrl+c)
 
-WEB_ROOT = ARGV[0] ? Dir.home + ARGV[0] : "samples"
+WEB_ROOT = $GLOBALS[:path]
 
 PORT = 2345
-# HOST = IPSocket.getaddress(Socket.gethostname)
-HOST = get_host_address
+HOST = get_host_address_ipv4
 
 server = TCPServer.new(HOST, PORT)
 
-sputs "Starting Server on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
+sputs "Serving #{WEB_ROOT} on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
 
-lock = Mutex.new #prevent different threads from accessing or mutating the same variables
-
+# lock = Mutex.new #prevent different threads from accessing or mutating the same variables
 
 loop {
 
@@ -38,12 +38,11 @@ loop {
 
     # lock.synchronize{
       begin
-
+        #ESTABLISH CONNECTION
         add_thread_id
         sputs "_____________________________________", color: "green"
-
-        sputs "opening socket connection with client from #{socket.remote_address.ip_address}", color: "green", important: true
-
+        sputs "opening socket connection with client from " +
+        "#{socket.remote_address.ip_address}", color: "green", important: true
         sputs 'preparing to receive request line...', color: "yellow"
 
         #GET REQUEST
