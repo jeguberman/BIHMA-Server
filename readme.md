@@ -25,10 +25,17 @@ Whenever BIHMA server receives a request it creates a new thread. It does this s
 BIHMA server defaults to an included folder called "samples" but users can pass a directory string to BIHMA server when running BIHMA from the command line.
 
 ```
+ruby server.rb ~/Pictures
+```
+
+or
+
+```
 ruby server.rb /Pictures
 ```
 
-The given directory must begin with a slash and must be part of the users root directory.
+either will work, serving the directory found in the users home directory. If the directory doesn't exist in the user's home directory, BIHMA server throws an error.
+
 
 ### Dynamically generated HTML
 Sort of. It's not exactly ruby on rails, but there are no html documents in BIHMA server. Instead there is a function which returns a string containing a HTML code with a helper function that will list all files in the directory.

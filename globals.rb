@@ -21,11 +21,14 @@ class OptionsHandler
         raise ArgumentError, "Bad argument \"#{arg}\" passed from command line"
       end
     end
+    puts $GLOBALS[:path]
   end
 
   def self.set_custom_path(path)
     if File.directory?(Dir.home + path)
       $GLOBALS[:path] = Dir.home + path
+    elsif File.directory?( path)
+      $GLOBALS[:path] = path
     else
       raise ArgumentError, "No directory found at given path"
     end
