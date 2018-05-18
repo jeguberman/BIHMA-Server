@@ -20,15 +20,16 @@ require_relative './util/generate_response_header.rb'
 OptionsHandler.set_globals_from_argv
 
 begin #handle interrupt (ctrl+c)
+  #Begin watching for interupt so the logger can dump this session's log before closing the program
 
 WEB_ROOT = $GLOBALS[:path]
-
-PORT = 9001
+PORT = 9001 #every tutorial suggests using a high port number. This port number is very high, it's over 9000.
 HOST = get_host_address_ipv4
 
 server = TCPServer.new(HOST, PORT)
 
 sputs "Serving #{WEB_ROOT} on host #{Socket.gethostname}(#{HOST}); Listening on port #{PORT}", color: "green", important: true
+
 
 # lock = Mutex.new #prevent different threads from accessing or mutating the same variables
 
@@ -57,7 +58,7 @@ loop {
           buffer: nil,
           status_code: nil,
           response_header: nil
-        }
+        } #Package is a bundle of information to be passed down the assembly line generating our response. 
 
         #GET ROUTE
         package = package.merge get_path_and_ext_from_request(request_line)#add path to package

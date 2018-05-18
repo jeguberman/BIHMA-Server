@@ -88,12 +88,12 @@ Users can pass -feedback at runtime to get more information.
 ```
 This feedback is color coded. Red text is an error, yellow text means the server has to do something, and green text means the server completed a task and is ready to move on to the next line.
 
-
+Color was implemented using [fazibear's colorize](https://github.com/fazibear/colorize)
 ## Notes
 
 ### Classes
 
-For this project, I didn't write any ruby classes, electing for a more functional approach. Part of the reason I did this is because it was in line with the original tutorial that BIHMA server is based on. ( https://practicingruby.com/articles/implementing-an-http-file-servera ). But ultimately I decided that none of the functions were doing anything sophisticated enough to warrant an entire class. I did write one static class in order to handle options passed at run time. I only did this because I didn't want anybody thinking I was a ruby developer from another dimension who had no idea what classes are.  
+For this project, I didn't write any ruby classes, electing for a more functional approach. Part of the reason I did this is because it was in line with the [original tutorial](https://practicingruby.com/articles/implementing-an-http-file-servera) that BIHMA server is based on. . But ultimately I decided that none of the functions were doing anything sophisticated enough to warrant an entire class. I did write one static class in order to handle options passed at run time. I only did this because I didn't want anybody thinking I was a ruby developer from another dimension who had no idea what classes are.  
 
 
 ### Motivation
