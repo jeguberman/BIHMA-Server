@@ -1,4 +1,7 @@
-def get_host_address_ipv4 #returns last listed ipv4 address for current host which isn't the loopback address. If no address is found, returns loopback address
+#A younger me thought this mattered. I am leaving it however. I did work on it,
+#and it does give my logger something to do
+def get_host_address_ipv4 #get last listed ipv4 address for current host which isn't the loopback address. If no address is found, returns loopback address
+
 
   # reserved_address = ["127"]#, "192"] #do research on reserved ip addresses
   hostAddr = nil

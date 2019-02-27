@@ -12,6 +12,8 @@ CONTENT_TYPE_MAPPING.default = 'application/octet-stream'#If the server don't kn
 
 STATUS_CODES = {
   200 => "OK",
+  204 => "No Content",
+  400 => "Bad Request",
   404 => "Not Found",
   408 => "Request Timeout",
   500 => "Internal Server Error"

@@ -1,0 +1,4 @@
+1) change bad naming of variables
+2) add routing
+3) separate package into two sub objects, one for the response being returned and one for tuple like information
+4) incorporate http library to simplify your life

@@ -7,6 +7,11 @@ $GLOBALS = {
 
 #path must be set with a slash at argv, like this "/MyDocuments"
 
+#2019-01-24: oh my god what was I doing, there was a preinstalled
+#https://ruby-doc.org/stdlib-2.2.3/libdoc/getoptlong/rdoc/GetoptLong.html
+#class https://stackoverflow.com/questions/5688685/how-to-use-getoptlong-class-in-ruby
+
+#how is this a global variable? Why isn't this it's own class file? Why is this a class? Does this need to be a class? I feel like ruby is only happy when something is a class.
 
 class OptionsHandler
 
@@ -21,7 +26,6 @@ class OptionsHandler
         raise ArgumentError, "Bad argument \"#{arg}\" passed from command line"
       end
     end
-    puts $GLOBALS[:path]
   end
 
   def self.set_custom_path(path)

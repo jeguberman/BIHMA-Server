@@ -1,0 +1,156 @@
+-add download all button
+
+elise: {
+
+  comments:[
+    "why, not what",
+    "don't be vague, even when it's funny or convenient. Don't save christmas",
+  ],
+  misc:[
+
+    "users have a homedirectory, not a root directory, should be represented with ~/ not /",
+
+    "local host is a block, 127.0.0.1 is insufficient, for example 127.0.1.1 is also localhost or at least, is on lo (lo is the local interface);the more correct thing is to check the interface type",
+
+    "this looks weird   if(request_line.slice(-1) == \"!\")",
+
+    "ext = File.extname(path).slice(1..-1) file name extensions \"aren't a thing\"; they're just convention. you might know this, but won't hurt repeating",
+
+    "def scrub_path(request_uri) #scrub the path to prevent some attacks interesting; not a bad initial implementation. The way I'd do it is resolve it to a full absolute path, get the full absolute path of webroot, and ensure the prefix of the requested path equals the entire webroot. Your impl likely works but is more complicated than required rescue Exception => e",
+
+
+  ]
+
+  errors: [
+    "request_line = \"timeout!\"
+you could imagine another expection thrown in this block, for example the client disconnecting might cause gets to throw (or return nil, dunno). either way it's better to use the most specific exception type in your catch (Resuce) statement"
+
+],
+
+util: [
+  "log-util should be refactored"
+]
+
+
+
+
+
+
+
+if string.class.ancestors.include? Exception
+lol ruby is gross
+though to be fair an error in golang is just anything with an Error() method, so shrug
+
+
+log_util #everything in here is horrible.
+i mean, not horrible, but definately gross. at minimum the function names should be more specific
+cute history thing; i'm guessing because you wanted each thread's output to not be interleaved?
+I would also like to have an option to merely view the files instead of downloading - but these are the same thing :smiley: but yeah i know what you mean, look into the Content-Disposition header
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition (i can't believe i remember this random detail)
+MDN Web Docs
+Content-Disposition
+In a multipart/form-data body, the HTTP Content-Disposition general header is a header that can be used on the subpart of a multipart body to give information about the field it applies to. The subpart is delimited by the boundary defined in the ...
+
+#globals should only be set at start up, before any multi-threading occurs. While they can be accessed from different threads, they shouldn't be mutatable from different threads, so I am not using a mutex lock here.
+so it is "most correct" to also use a mutex when reading if there is a possibility that another thread will change these values. the reasons aren't that important but effectively boil down to "you can't change more than fourish bytes atomically". that said this is much less important in ruby / python as opposed to, say, c++
+
+
+oooh very nice documentation and word choice stored in a payload called package
+
+
+eb - Last Thursday at 4:01 PM
+BIHMA server defaults to an included folder called "samples" but users can pass a directory string to BIHMA server when running BIHMA from the command line. niceee;
+
+python has one of these too: python -m SimpleHTTPServer 8000
+
+
+v nice logging with the thread id
+good intorduction to basic threading
+
+Ruby is full of idiomatic little shortcuts like this, they make coding fun, allowing the programmer to insert little flourishes, but raise questions in people unfamiliar with ruby. - great thing to put in a readme, esp as a junior dev
+
+
+Cool, so summary:
++ Excellent readme clearly explaining design choices
+uberguby - Last Thursday at 4:07 PM
+:heart_eyes: thank you so much :heart_eyes_cat:
+eb - Last Thursday at 4:07 PM
+- Organization is a bit strange, but one function per file is not the worst thing i've seen. While it's true that you just have functions using namespaces (ha!) would go a long way here for grouping.
+- Comments in text, while funny, are mostly "what" instead of "why". Consider more comments with "why" right in the source
+- some of your utils for logging / threading are gross, but you know this, and they weren't the point, so that's fine
+uberguby - Last Thursday at 4:09 PM
+Yeah
+eb - Last Thursday at 4:09 PM
+consider looking into your language's preferred logging stuff; python's for example is import logging. That said logging with threads sucks, as you've now learned :smiley:
+you don't need to read all (or really, any) of this, but the topic I think interests you: https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/32713.pdf
+title: How to Design a Good
+API and Why it Matters
+- globals.rb should really be taking command line params / a config file and reading that, but wasn't the point, so it's fine
++ good choice to introduce the Package type as opposed to throwing all that as seperate params, though it could have been named slightly better
++ oh, you do the arg thing - def self.set_globals_from_argv good work
+- while argparsing is a good exercise, stuff like def self.handle_short_flags(arg) is boilerplate (someone else has def written a flag library for ruby). since this is a learning thing it's fine, but on a real project i'd not let you submit until you used a library
+~ begin #handle interrupt (ctrl+c) huh, I was going to say don't use the word interrupt because it's overloaded, but I guess that's what ruby calls it (Interrupt). In Python it's KeyboardInterrupt
+- Thread.kill Thread.current this is probably not needed
++ Does what it says on the tin
++- Clearly a learning exercise
++ Looks like it was a good learning exercise
++ You knew enough about mutexes to realize that the globals didn't change after threads started and that you didn't actually need any synchronization for the key points of this
+- Technically, in not-ruby and not-python, history_push should be synchronized with a mutex as it modifies a global (HISTORY). This is because in Ruby/Python there's actually a "GIL", or "Global Interpreter Lock", which synchronizes all dict/object mutations. But you don't know that, so you needed it :). In C++ or Golang, for example, this could result in a memory access violation (as the backing hashmap might be reallocated and moved from under a writing thread)
+Overall suggestion: 1. Create a new empty branch. 2. Add a pull request to merge all of master into it. 3. Send me the PR and I can comment directly on the files :smiley:
+anyway, yes, nice work, I suggest this goes on the resume
+The say there are three "great filters" of programming; three important concepts that need to be mastered
+First is functions/variables. Next is recursion. Next is concurrency (threading, events, etc).
+Networking is basically a specialization of concurrency. Distributed Systems is basically a specialization of Networking and Concurrency.
+You have exposure to a lot of high level concepts and low level concepts, mostly through me / the internet, and that puts you well ahead of many programmers on an abstract / theoretical level. The things you're mostly missing are implementation experience, experience using libraries, and experience using other people's apis. Or, to put it another way: I think you either are or could be a very solid junior dev right now with a good growth trajectory, but you're going to be slow in implementation, design, and making 'the right choices'. But that's all expected; if you find a company that cares about it's employees you'll do great. If you don't then you might be stuck lost in Javascript library land.
+Oh, you're also a bit weak in 'overall context' in the ecosystem (eg ssh, linux use, .bashrc) but that comes from experience and reading other people's code
+My suggestions on stuff to do is a) figure out ssh b) figure out your 'development environment' and what that means to you c) figure out a workflow to keep yourself on track d) go spin up a server on GCS or AWS and administer it a little bit
+}
+
+
+historyLogMenu:{
+tool to peruse logs when server is off
+}
+
+fixthisChromeIssue:{
+  "It's uncouth": [
+    "mutex",
+    "get client ip address",
+    "threading?",
+    "WTF is happening",
+    "call rylee"
+
+  ]
+
+  code 429 too many requests
+}
+
+optionsFlags:{
+  options:{
+    "p","--path <path>": "serve files from path",
+    "l","--log": "jump into log menu:latest log",
+    "h", "--history": "Log menu",
+    "f", "--feedback": "full log to STDERR(default minilog)"
+    "v", "--version": "version number"
+    "s", "--silent": "run silently"
+
+  }
+}
+
+
+
+probably not these...
+
+
+connectToDataBase:{
+  connectToDataBase,
+  orm
+}
+
+betterHTML:{
+  probably use react
+}
+
+RestfulRouter:{
+  separate file for routes,
+  routes stored in database(see pg/tutorials/php/router),
+}
